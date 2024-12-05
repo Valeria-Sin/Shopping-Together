@@ -1,0 +1,299 @@
+openapi: 3.0.3
+info:
+  title: Seller Dashboard API
+  version: 1.0.0
+servers:
+  - url: https://api.sellerdashboard.com
+tags:
+  - name: order
+    description: Метод управления заказами
+  - name: inventory
+    description: Методы управления складом
+  - name: product
+    description: Методы управления продуктами
+  
+paths:
+  /api/v1/orders:
+    get:
+      tags:
+        - order
+      summary: Получить список заказов
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+          description: Отфильтровать заказы по статусу
+          required: false
+      responses:
+        '200':
+          description: Список заказов получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              example:
+                - id: '12345'
+                  customerId: '98765'
+                  items:
+                    - productId: '111'
+                      quantity: 2
+                  totalAmount: 200
+                  status: pending
+        '400':
+          description: Недопустимое значение статуса
+          
+  /api/v1/orders/{orderId}:
+    parameters:
+      - in: path
+        name: orderId
+        required: true
+        schema:
+          type: string
+        description: ID заказа для обновления
+    patch:
+      tags:
+        - order
+      summary: Обновить статус заказа
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+            example:
+              status: shipped
+      responses:
+        '200':
+          description: Статус заказа успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: '12345'
+                customerId: '98765'
+                items:
+                  - productId: '111'
+                    quantity: 2
+                totalAmount: 200
+                status: shipped
+        '400':
+          description: Недопустимое значение статуса
+        '404':
+          description: Заказ не найден
+          
+  /api/v1/inventory:
+    get:
+      tags:
+        - inventory
+      summary: Показать список товаров на складе
+      responses:
+        '200':
+          description: Список товаров на складе получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+              example:
+                - id: inv-001
+                  productId: '111'
+                  quantityAvailable: 50
+                  
+  /api/v1/inventory/{itemId}:
+    parameters:
+      - in: path
+        name: itemId
+        required: true
+        schema:
+          type: string
+        description: ID товара, который необходимо обновить
+    patch:
+      tags:
+        - inventory
+      summary: Обновить количество товара
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInventoryRequest'
+            example:
+              quantityAdjustment: 5
+      responses:
+        '200':
+          description: Количество товара успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+              example:
+                id: inv-001
+                productId: '111'
+                quantityAvailable: 55
+        '400':
+          description: Недопустимое значение количества
+        '404':
+          description: Товар не найден
+          
+  /api/v1/products:
+    post:
+      tags:
+        - product
+      summary: Добавить новый товар в каталог
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProduct'
+            example:
+              name: New Product
+              price: 29.99
+              categoryId: cat-123
+              attributes:
+                colorOptions:
+                  - red
+                  - blue
+                sizeOptions:
+                  - S
+                  - M
+                  - L
+      responses:
+        '201':
+          description: Товар успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              example:
+                id: prod-001
+                name: New Product
+                price: 29.99
+                categoryId: cat-123
+                attributes:
+                  colorOptions:
+                    - red
+                    - blue
+                  sizeOptions:
+                    - S
+                    - M
+                    - L
+        '400':
+          description: Некорректные данные о товаре
+          
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    OrderStatus:
+      type: string
+      enum: [pending, processing, shipped, delivered, cancelled]
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор заказа
+        customerId:
+          type: string
+          description: Уникальный идентификатор клиента
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        totalAmount:
+          type: number
+          format: float
+          description: Общая сумма заказа
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+      required:
+        - id
+        - customerId
+        - items
+        - totalAmount
+        - status
+          
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: string
+          description: Идентификатор продукта
+        quantity:
+          type: integer
+          description: Количество единиц товара
+          
+    UpdateOrderStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+      required:
+        - status
+
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор товара на складе
+        productId:
+          type: string
+          description: Идентификатор продукта
+        quantityAvailable:
+          type: integer
+          description: Доступное количество товара на складе
+          
+    UpdateInventoryRequest:
+      type: object
+      properties:
+        quantityAdjustment:
+          type: integer
+          description: Изменение количества товара (может быть положительным или отрицательным)
+          
+    NewProduct:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        categoryId:
+          type: string
+        attributes:
+          type: object
+          properties:
+            colorOptions:
+              type: array
+              items:
+                type: string
+            sizeOptions:
+              type: array
+              items:
+                type: string
+                
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        categoryId:
+          type: string
+        attributes:
+          type: object

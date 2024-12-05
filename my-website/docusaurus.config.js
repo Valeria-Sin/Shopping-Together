@@ -1,41 +1,25 @@
-// @ts-check
-// `@type` JSDoc annotations allow editor autocompletion and type checking
-// (when paired with `@ts-check`).
-// There are various equivalent ways to declare your Docusaurus config.
-// See: https://docusaurus.io/docs/api/docusaurus-config
+import { themes as prismThemes } from 'prism-react-renderer';
 
-import {themes as prismThemes} from 'prism-react-renderer';
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+const simplePlantUML = require("@akebifiky/remark-simple-plantuml"); // объявляем плагин для plantuml
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
-  favicon: 'img/favicon.ico',
+  title: 'Shopping-Together', //Название сайта на начальной странице
+  tagline: 'Shopping-Together', // Описание сайта на начальной странице
+  favicon: 'img/favicon.ico', // Иконка сайта
+  url: 'https://Valeria-Sin.github.io/', // Адрес gitlab pages, обычно https://<username>.github.io
+  baseUrl: 'Shopping-Together', // Базовый url, обычно название репозитория
+  organizationName: 'Valeria-Sin', // Имя GitHub пользователя
+  projectName: 'Shopping-Together', // Имя репозитория
+  onBrokenLinks: 'warn', // Чтобы не падать при наличии неработающих ссылок
+  onBrokenMarkdownLinks: 'warn', // Чтобы не падать при наличии неработающих ссылок
+  trailingSlash: false,
+  deploymentBranch: 'gh-pages',
 
-  // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
-
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
-  },
-
+//подключаем плагин для drawio
+  plugins: [
+    ['drawio', {}]
+  ],
   presets: [
     [
       'classic',
@@ -43,59 +27,54 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
+          routeBasePath: 'docs',
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/Valeria-Sin/Shopping-Together.git',
+          remarkPlugins: [simplePlantUML], //подключаем плагин для plantuml
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
       }),
+    ],
+    // подключаем плагин для OPENAPI
+    [
+      'redocusaurus',
+      {
+        specs: [
+          {
+            id: 'Shopping-Together',
+            spec: 'api_specs/openapi.yaml',
+          },
+        ],
+        theme: {
+          primaryColor: '#1890ff',
+        },
+      }
     ],
   ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'My Site',
+        title: 'Shopping-Together', //Название на навбаре
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.svg', //Логотип на навбаре
         },
+        // тут можно настроить элементы навбара
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: 'Tutorial',
-          },
-          {to: '/blog', label: 'Blog', position: 'left'},
-          {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/Valeria-Sin/Shopping-Together.git',
             label: 'GitHub',
             position: 'right',
           },
         ],
       },
+      // тут можно настроить элементы футера
       footer: {
         style: 'dark',
         links: [
@@ -103,8 +82,8 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Docs',
+                to: '/docs/',
               },
             ],
           },
