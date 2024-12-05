@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" id="definitions_1xddy3j" name="definitions" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="decision" name="Проверка статусов участников">
+    <decisionTable id="decisionTable">
+      <input id="input1" label="Статус приглашения">
+        <inputExpression id="inputExpression1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="Статус оплаты" name="" typeRef="string" />
+      <output id="OutputClause_0rclb1y" label="Результат" typeRef="string" />
+      <rule id="row-929715810-1">
+        <description>Продолжить оформление заказа</description>
+        <inputEntry id="UnaryTests_01esk1f">
+          <text><![CDATA["Принято"]]></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0pyjr6n">
+          <text><![CDATA["Оплачен"]]></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0016en9">
+          <text><![CDATA["Условия выполнены"]]></text>
+        </outputEntry>
+      </rule>
+      <rule id="row-929715810-3">
+        <description>Запросить дополнительную информацию от участника</description>
+        <inputEntry id="UnaryTests_1pksxz9">
+          <text><![CDATA["Принято"]]></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0ezuozd">
+          <text><![CDATA["Не оплачен"]]></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1e9m4gw">
+          <text><![CDATA["Условия не выполнены"]]></text>
+        </outputEntry>
+      </rule>
+      <rule id="row-929715810-4">
+        <description>Ранее система удаляет таких участников</description>
+        <inputEntry id="UnaryTests_15hrdl1">
+          <text><![CDATA["Отклонено"]]></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1mfylo9">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_08ah72s">
+          <text></text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
